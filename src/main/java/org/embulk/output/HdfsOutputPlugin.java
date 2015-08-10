@@ -51,8 +51,34 @@ public class HdfsOutputPlugin implements FileOutputPlugin
                                   FileOutputPlugin.Control control)
     {
         PluginTask task = config.loadConfig(PluginTask.class);
+        checkOutputPath(task, true);
         return resume(task.dump(), taskCount, control);
     }
+
+
+    private void checkOutputPath(PluginTask task, boolean makeParentDir)
+    {
+        try {
+            Configuration configuration = getHdfsConfiguration(task);
+            FileSystem fs = getFs(configuration);
+            String outputPath = strftime(task.getOutputPath());
+            Path opath = new Path(outputPath);
+            Path ppath = opath.getParent();
+            if (fs.exists(opath)) {
+                throw new RuntimeException(opath.toString() + "already exists.");
+            }
+            if (!fs.exists(ppath)){
+                fs.mkdirs(ppath);
+            }
+        }
+        catch(IOException ioe){
+            new RuntimeException(ioe.toString() + " happened.");
+        }
+        catch(RuntimeException re){
+            throw re;
+        }
+    }
+
 
     @Override
     public ConfigDiff resume(TaskSource taskSource,
