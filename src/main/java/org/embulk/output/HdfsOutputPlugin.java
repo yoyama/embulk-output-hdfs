@@ -67,7 +67,7 @@ public class HdfsOutputPlugin implements FileOutputPlugin
             if (fs.exists(opath)) {
                 throw new RuntimeException(opath.toString() + "already exists.");
             }
-            if (!fs.exists(ppath)){
+            if (makeParentDir && !fs.exists(ppath)){
                 fs.mkdirs(ppath);
             }
         }
