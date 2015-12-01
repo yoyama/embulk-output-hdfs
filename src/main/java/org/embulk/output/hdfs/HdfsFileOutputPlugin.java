@@ -177,7 +177,7 @@ public class HdfsFileOutputPlugin
         Configuration configuration = new Configuration();
 
         for (Object configFile : task.getConfigFiles()) {
-            configuration.addResource(configFile.toString());
+            configuration.addResource(new Path(configFile.toString()));
         }
         configuration.reloadConfiguration();
 
